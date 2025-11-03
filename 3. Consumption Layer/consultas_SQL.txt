@@ -1,0 +1,132 @@
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- Query 1: Tiempo promedio de cotización por resultado y segmento
+SELECT
+    tabla1.segmento_industria,
+    tabla2.estado_oportunidad,
+    AVG(CAST(tabla3.tiempo_elaboracion AS DECIMAL(10,2))) AS promedio_horas_cotizacion, -- Métrica de eficiencia
+    COUNT(tabla3.cotizacion_id) AS total_cotizaciones_analizadas
+FROM
+    "prodirtec-datalake"."clientes" AS tabla1
+INNER JOIN
+    "prodirtec-datalake"."oportunidades" AS tabla2
+    ON tabla1.cliente_id = tabla2.cliente_id_fk
+INNER JOIN
+    "prodirtec-datalake"."cotizaciones" AS tabla3
+    ON tabla2.oportunidad_id = tabla3.oportunidad_id_fk
+WHERE
+    tabla2.estado_oportunidad IN ('Ganado', 'Perdido')
+    -- AND tabla3.version_cotizacion = '1.0' -- Analizar la primera versión cotizada
+GROUP BY
+    tabla1.segmento_industria,
+    tabla2.estado_oportunidad
+ORDER BY
+    tabla1.segmento_industria,
+    promedio_horas_cotizacion DESC;
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- Query 2: Precisión de la estimación comercial contra oportunidades de Negociación
+SELECT
+    tabla1.razon_social,
+    tabla2.oportunidad_id,
+    tabla2.monto_estimado_venta,
+    tabla3.monto_final_cotizacion,
+    (CAST(tabla3.monto_final_cotizacion AS DECIMAL(18,2)) - CAST(tabla2.monto_estimado_venta AS DECIMAL(18,2))) AS diferencia_monto_dolar,
+    ROUND((CAST(tabla3.monto_final_cotizacion AS DECIMAL(18,2)) / CAST(tabla2.monto_estimado_venta AS DECIMAL(18,2))) - 1, 4) * 100 AS variacion_porcentual
+FROM
+    "prodirtec-datalake"."clientes" AS tabla1
+INNER JOIN
+    "prodirtec-datalake"."oportunidades" AS tabla2
+    ON tabla1.cliente_id = tabla2.cliente_id_fk
+INNER JOIN
+    "prodirtec-datalake"."cotizaciones" AS tabla3
+    ON tabla2.oportunidad_id = tabla3.oportunidad_id_fk
+WHERE
+    tabla2.estado_oportunidad = 'Negociación'
+--    AND tabla3.version_cotizacion = 1
+ORDER BY
+    variacion_porcentual DESC;
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- Query 3: Monitoreo de Cumplimiento Documental y Financiero de Contratos Vigentes
+SELECT
+    tabla1.contrato_id,
+    tabla1.fecha_contrato,
+    tabla1.fecha_vencimiento,
+    COUNT(DISTINCT tabla2.factura_id) AS facturas_emitidas,
+    COUNT(DISTINCT tabla3.archivo_id) AS total_archivos_cargados,
+    tabla1.clausula_penalidades
+FROM
+    "prodirtec-datalake"."contratos" AS tabla1
+LEFT JOIN
+    "prodirtec-datalake"."facturas" AS tabla2
+    ON tabla1.contrato_id = tabla2.contrato_id_fk
+LEFT JOIN
+    "prodirtec-datalake"."archivos" AS tabla3
+    ON tabla1.contrato_id = tabla3.contrato_id_fk
+WHERE
+    CAST(SUBSTRING(tabla1.fecha_vencimiento,1,10) AS DATE) > CAST(CURRENT_DATE AS DATE)-- Filtrar solo contratos vigentes
+GROUP BY
+    tabla1.contrato_id, tabla1.fecha_contrato, tabla1.fecha_vencimiento, tabla1.clausula_penalidades
+ORDER BY
+    facturas_emitidas DESC;
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- Creación de la Vista: Vista Maestra para LTV y Rendimiento Financiero
+CREATE OR REPLACE VIEW prodirtec_vista_ltv_financiera AS
+SELECT
+    -- Datos del Cliente (LTV)
+    tabla1.cliente_id,
+    tabla1.razon_social,
+    tabla1.segmento_industria,
+    tabla1.monto_total_facturado AS ltv_historico,
+    -- Datos del Contrato
+    tabla3.contrato_id,
+    tabla3.fecha_contrato,
+    tabla3.fecha_vencimiento,
+    tabla3.clausula_penalidades,
+    -- Datos de Facturación (Flujo de Caja y Morosidad)
+    tabla4.factura_id,
+    tabla4.monto_facturado,
+    tabla4.estado_pago,
+    tabla4.fecha_vencimiento AS fecha_vencimiento_factura
+FROM
+    "prodirtec-datalake"."clientes" AS tabla1
+INNER JOIN
+    "prodirtec-datalake"."oportunidades" AS tabla2
+    ON tabla1.cliente_id = tabla2.cliente_id_fk
+INNER JOIN
+    "prodirtec-datalake"."contratos" AS tabla3
+    ON tabla2.oportunidad_id = tabla3.oportunidad_id_fk
+LEFT JOIN
+    "prodirtec-datalake"."facturas" AS tabla4
+    ON tabla3.contrato_id = tabla4.contrato_id_fk
+WHERE
+    tabla2.estado_oportunidad = 'Ganado'; -- Solo transacciones de ventas exitosas
+
+
+
+-- Consulta de la Vista: Identificar saldo pendiente (morosidad) por segmento
+SELECT
+    segmento_industria,
+    COUNT(factura_id) AS total_facturas_pendientes,
+    SUM(CAST(monto_facturado AS DECIMAL(18,2))) AS saldo_pendiente_total
+FROM
+    "prodirtec-datalake"."prodirtec_vista_ltv_financiera"
+WHERE
+    estado_pago = 'Pendiente'
+    AND CAST(SUBSTRING(fecha_vencimiento_factura,1,10) AS DATE) < CAST(CURRENT_DATE AS DATE) -- Facturas vencidass/pendientes
+GROUP BY
+    segmento_industria
+ORDER BY
+    saldo_pendiente_total DESC;
+
