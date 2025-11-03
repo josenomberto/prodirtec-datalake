@@ -1,0 +1,32 @@
+[
+    {
+        "Name": "cotizacion_id",
+        "Type": "string",
+        "Comment": "PRIMARY KEY, NOT NULL. Clave única."
+    },
+    {
+        "Name": "oportunidad_id_fk",
+        "Type": "string",
+        "Comment": "FOREIGN KEY (oportunidades.oportunidad_id)."
+    },
+    {
+        "Name": "version_cotizacion",
+        "Type": "int",
+        "Comment": "Control de versiones de la propuesta."
+    },
+    {
+        "Name": "monto_final_cotizacion",
+        "Type": "decimal(18,2)",
+        "Comment": "Monto final generado por el motor de IA."
+    },
+    {
+        "Name": "servicios_detalle",
+        "Type": "string",
+        "Comment": "Descripción o códigos de los servicios incluidos."
+    },
+    {
+        "Name": "tiempo_elaboracion",
+        "Type": "decimal(10,2)",
+        "Comment": "Tiempo en horas para la elaboración (métrica de eficiencia)."
+    }
+]

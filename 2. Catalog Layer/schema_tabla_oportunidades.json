@@ -1,0 +1,37 @@
+[
+    {
+        "Name": "oportunidad_id",
+        "Type": "string",
+        "Comment": "PRIMARY KEY, NOT NULL. Clave única."
+    },
+    {
+        "Name": "cliente_id_fk",
+        "Type": "string",
+        "Comment": "FOREIGN KEY (clientes.cliente_id)."
+    },
+    {
+        "Name": "estado_pipeline",
+        "Type": "string",
+        "Comment": "Fase actual: Lead, Cotizado, Negociación, Ganado, Perdido."
+    },
+    {
+        "Name": "fecha_creacion",
+        "Type": "timestamp",
+        "Comment": "Momento de registro en el CRM."
+    },
+    {
+        "Name": "fecha_cierre_esperado",
+        "Type": "date",
+        "Comment": "Fecha ingresada por el agente para forecasting."
+    },
+    {
+        "Name": "monto_estimado_venta",
+        "Type": "decimal(18,2)",
+        "Comment": "Monto inicial o de la última cotización."
+    },
+    {
+        "Name": "motivo_perdida",
+        "Type": "string",
+        "Comment": "Motivo obligatorio al pasar a estado Perdido."
+    }
+]

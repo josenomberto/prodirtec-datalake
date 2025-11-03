@@ -1,0 +1,42 @@
+[
+    {
+        "Name": "cliente_id",
+        "Type": "string",
+        "Comment": "PRIMARY KEY, NOT NULL. Clave única."
+    },
+    {
+        "Name": "ruc",
+        "Type": "string",
+        "Comment": "RUC validado vía API SUNAT."
+    },
+    {
+        "Name": "razon_social",
+        "Type": "string",
+        "Comment": "Nombre o Razón Social oficial."
+    },
+    {
+        "Name": "dni_contacto",
+        "Type": "string",
+        "Comment": "DNI validado vía API SUNAT."
+    },
+    {
+        "Name": "nombre_contacto",
+        "Type": "string",
+        "Comment": "Nombre de contacto en cliente."
+    },
+    {
+        "Name": "segmento_industria",
+        "Type": "string",
+        "Comment": "Clasificación de industria para análisis de mercado."
+    },
+    {
+        "Name": "fecha_primer_contrato",
+        "Type": "date",
+        "Comment": "Fecha de inicio de relación comercial."
+    },
+    {
+        "Name": "monto_total_facturado",
+        "Type": "decimal(18,2)",
+        "Comment": "Variable clave para el cálculo de LTV (Lifetime Value)."
+    }
+]

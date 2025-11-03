@@ -1,0 +1,27 @@
+[
+    {
+        "Name": "archivo_id",
+        "Type": "string",
+        "Comment": "PRIMARY KEY, NOT NULL. Identificador único de archivo."
+    },
+    {
+        "Name": "contrato_id_fk",
+        "Type": "string",
+        "Comment": "FOREIGN KEY (CONTRATOS_FORMALIZADOS.contrato_id)."
+    },
+    {
+        "Name": "tipo_documento",
+        "Type": "string",
+        "Comment": "Categoría: BIM, Certificado, Informe, etc."
+    },
+    {
+        "Name": "fecha_carga",
+        "Type": "timestamp",
+        "Comment": "Momento de la subida al DMS."
+    },
+    {
+        "Name": "version_documento",
+        "Type": "string",
+        "Comment": "Control de versiones para la trazabilidad."
+    }
+]

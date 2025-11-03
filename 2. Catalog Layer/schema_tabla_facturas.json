@@ -1,0 +1,32 @@
+[
+    {
+        "Name": "factura_id",
+        "Type": "string",
+        "Comment": "PRIMARY KEY, NOT NULL. Número de comprobante oficial (API SUNAT)."
+    },
+    {
+        "Name": "contrato_id_fk",
+        "Type": "string",
+        "Comment": "FOREIGN KEY (contratos.contrato_id)."
+    },
+    {
+        "Name": "fecha_emision",
+        "Type": "date",
+        "Comment": "Fecha oficial de emisión."
+    },
+    {
+        "Name": "fecha_vencimiento_pago",
+        "Type": "date",
+        "Comment": "Fecha límite de pago, base para el Payment Default Prediction."
+    },
+    {
+        "Name": "monto_facturado",
+        "Type": "decimal(18,2)",
+        "Comment": "Valor total del comprobante."
+    },
+    {
+        "Name": "estado_pago",
+        "Type": "string",
+        "Comment": "Estado actual: Pagado, Pendiente, Moroso."
+    }
+]

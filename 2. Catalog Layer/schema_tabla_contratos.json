@@ -1,0 +1,27 @@
+[
+    {
+        "Name": "contrato_id",
+        "Type": "string",
+        "Comment": "PRIMARY KEY, NOT NULL. Clave única."
+    },
+    {
+        "Name": "oportunidad_id_fk",
+        "Type": "string",
+        "Comment": "FOREIGN KEY (OPORTUNIDADES_COMERCIALES.oportunidad_id) con estado 'Ganado'."
+    },
+    {
+        "Name": "fecha_contrato",
+        "Type": "date",
+        "Comment": "Metadato extraído de la Firma Digital."
+    },
+    {
+        "Name": "fecha_vencimiento",
+        "Type": "date",
+        "Comment": "Fecha de culminación del contrato."
+    },
+    {
+        "Name": "clausula_penalidades",
+        "Type": "boolean",
+        "Comment": "TRUE si el contrato contiene cláusulas de penalidades (Extraído vía NLP)."
+    }
+]
